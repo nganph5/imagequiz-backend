@@ -44,4 +44,4 @@ let generateQuizzes = () => {
 let quizzes = generateQuizzes();
 
 
-exports.quizzes = quizzes;
+module.exports = {quizzes};
