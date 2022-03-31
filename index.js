@@ -29,11 +29,12 @@ application.post('/login', (request, response) => {
     } else {
         response.status(401).json({ done: false, message: result.message});
     }
+});
 
-    application.get('/quiz/:id', (request, response) => {
-        let id = request.params.id;
-        let result = store.getQuiz(id);
-        if (result.done) {
+application.get('/quiz/:id', (request, response) => {
+    let id = request.params.id;
+    let result = store.getQuiz(id);
+    if (result.done) {
         response.status(200).json({ done: true, result: result.quiz});
     }  else {
         response.status(404).json({done: false, message: result.message});
@@ -42,4 +43,4 @@ application.post('/login', (request, response) => {
 
 application.listen(port, () => {
     console.log(`Listening to the port ${port} `);
-})
+});
