@@ -6,12 +6,13 @@ let { scores } = require("./scores");
 
 let store = {
   addCustomer: (name, email, password) => {
-    const hash = bcrypt.hashSync(password, 10);
+    const hashpass = bcrypt.hashSync(password, 10);
+    let id = getRandomInt(300000000000)
     if (customers.includes(email)) {
-      return { done: false };
+      return { done: false, message: "Customer exists" };
     } else {
-      customers.push({ id: 1, name: name, email: email, password: hash });
-      return { done: true };
+      customers.push({ id: id, name: name, email: email, password: hashpass });
+      return { done: true, message: "add succesfully" };
     }
   },
 
@@ -44,6 +45,7 @@ let store = {
     let flowerlist = flowers;
     return { done: true, flowerlist };
   },
+
   score: (quizTaker, quizName, score, date) => {
     scores.push({
       quizTaker: quizTaker,
