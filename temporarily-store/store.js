@@ -2,7 +2,7 @@ const bcrypt = require("bcrypt");
 let { customers } = require("./customers");
 let { quizzes } = require("./data");
 let { flowers } = require("./flowers");
-let { score } = require("./scores");
+let { scores } = require("./scores");
 
 let store = {
   addCustomer: (name, email, password) => {
@@ -45,13 +45,21 @@ let store = {
     return { done: true, flowerlist };
   },
   score: (quizTaker, quizName, score, date) => {
-    score.push({
+    scores.push({
       quizTaker: quizTaker,
-      quizName: quizName,
+      quizId: quizName,
       score: score,
       date: date,
     });
     return { done: true, message: "Score is saved" };
+  },
+  getScores: (quizTaker,quizName) => {
+    let result = scores.find((x) => {x.quizTaker.toLowerCase() === quizTaker.toLowerCase(), x.quizName.toLowerCase() = quizName.toLowerCase()});
+    if (result) {
+      return { done: true, result: result, message: "here is the score" };
+    } else {
+      return { done: false, message: "Undefined" };
+    }
   },
 };
 

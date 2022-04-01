@@ -75,6 +75,17 @@ application.post("/score", (request, response) => {
     response.status(200).json({ done: true, message: store.message });
   }
 });
+application.get("/scores/:quiztaker/:quizname", (request, response) => {
+  let quizTaker = request.params.quiztaker;
+  let quizName = request.params.quizname;
+  let score = store.getScores(quizTaker, quizName);
+  //let result = store.getQuiz(id);
+  if (score.done) {
+    response.status(200).json({ done: true, result: score.result });
+  } else {
+    response.status(404).json({ done: false, message: result.message });
+  }
+});
 
 application.listen(port, () => {
   console.log(`Listening to the port ${port} `);
