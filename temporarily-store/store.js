@@ -57,9 +57,16 @@ let store = {
   },
 
   getScores: (quizTaker,quizName) => {
-    let result = scores.find((x) => {x.quizTaker.toLowerCase() === quizTaker.toLowerCase(), x.quizName.toLowerCase() = quizName.toLowerCase()});
-    if (result) {
-      return { done: true, result: result, message: "here is the score" };
+    res = [];
+    for(let i = 0; i < scores.length; i++){
+      let s = scores[i];
+      if (s.quizTaker === quizTaker && s.quizId === quizName){
+        res.push(s.score);
+      }
+    }
+    // let res = scores.find((x) => {return x.quizTaker.toLowerCase() === quizTaker.toLowerCase() && x.quizId.toLowerCase() === quizName.toLowerCase()});
+    if (res.length > 0) {
+      return { done: true, result: res, message: "here is the score" };
     } else {
       return { done: false, message: "Undefined" };
     }
