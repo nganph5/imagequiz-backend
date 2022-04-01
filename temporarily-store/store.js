@@ -7,17 +7,17 @@ let { scores } = require("./scores");
 let store = {
   addCustomer: (name, email, password) => {
     const hashpass = bcrypt.hashSync(password, 10);
-    let id = getRandomInt(300000000000)
-    if (customers.includes(email)) {
+    let id = customers.customers.length;
+    if (customers.customers.includes(email)) {
       return { done: false, message: "Customer exists" };
     } else {
-      customers.push({ id: id, name: name, email: email, password: hashpass });
+      customers.customers.push({ id: id, name: name, email: email, password: hashpass });
       return { done: true, message: "add succesfully" };
     }
   },
 
   login: (email, password) => {
-    let customer = customers.find(
+    let customer = customers.customers.find(
       (x) => x.email.toLowerCase() === email.toLowerCase()
     );
     if (customer) {

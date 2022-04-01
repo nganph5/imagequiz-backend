@@ -39,7 +39,7 @@ application.post("/login", (request, response) => {
   if (result.valid) {
     response
       .status(200)
-      .json({ done: true, message: "The customer was added successfully!" });
+      .json({ done: true, message: "The customer " + email + " logged in successfully!" });
   } else {
     response.status(401).json({ done: false, message: result.message });
   }
@@ -87,6 +87,6 @@ application.get("/scores/:quiztaker/:quizname", (request, response) => {
   }
 });
 
-application.listen(port, () => {
+application.listen(4002, () => {
   console.log(`Listening to the port ${port} `);
 });
