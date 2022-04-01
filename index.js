@@ -87,6 +87,6 @@ application.get("/scores/:quiztaker/:quizname", (request, response) => {
   }
 });
 
-application.listen(4002, () => {
+application.listen(port, () => {
   console.log(`Listening to the port ${port} `);
 });
