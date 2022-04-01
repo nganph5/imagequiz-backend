@@ -56,7 +56,6 @@ application.get("/quiz/:id", (request, response) => {
 });
 
 application.get("/flowers", (request, response) => {
-  //let flowers = request.params.flowers;
   let result = store.getFlower();
   if (result.done) {
     response.status(200).json({ done: true, result: result.flowerlist });
@@ -70,8 +69,9 @@ application.post("/score", (request, response) => {
   let quizName = request.body.quizName;
   let score = request.body.score;
   let date = new Date().toISOString().slice(0, 10);
-  let store = store.score(quizTaker, quizName, score, date);
-  if (store.done) {
+  let stored = store.score(quizTaker, quizName, score, date);
+  console.log(stored);
+  if (stored.done) {
     response.status(200).json({ done: true, message: store.message });
   }
 });
