@@ -9,13 +9,6 @@ drop table if exists imagequiz.category;
 drop table if exists imagequiz.question;
 drop table if exists imagequiz.customer;
 
-
-
-
-
-
-
-
 create table imagequiz.customer
 (
 	id bigserial primary key,
