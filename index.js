@@ -99,7 +99,7 @@ application.get("/flowers", (request, response) => {
     }
   })
   .catch(e => {
-    response.status(404).json({done: false, result: undefined, message: "Cannot retrieve the flower list due to an error."});
+    response.status(404).json({done: false, result: [], message: "Cannot retrieve the flower list due to an error."});
   })
 });
 
@@ -118,7 +118,7 @@ application.get("/scores/:quiztaker/:quizname", (request, response) => {
     }
   })
   .catch(e => {
-    response.status(404).json({done: false, result: undefined, message: "Cannot retrieve " + quizTaker + " result in quiz " + quizName + " due to an error."});
+    response.status(404).json({done: false, result: [], message: "Cannot retrieve " + quizTaker + " result in quiz " + quizName + " due to an error."});
   })
 });
 

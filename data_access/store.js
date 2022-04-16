@@ -85,7 +85,7 @@ let store = {
         return {found: true, res: result, len: result.length}
       }
       else{
-        return {found: false, res: undefined}
+        return {found: false, res: []}
       }
     })
     .catch(e => {
@@ -119,11 +119,11 @@ let store = {
         return {found: true, res: result, len: result.len}
       }
       else{
-        return {found: false, res: undefined}
+        return {found: false, res: []}
       }
     })
     .catch(e => {
-      return {found: false, res: undefined}
+      return {found: false, res: []}
     })   
   }
 };
