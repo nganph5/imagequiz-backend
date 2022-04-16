@@ -116,7 +116,7 @@ let store = {
         for(let i in x.rows){
           result.push(x.rows[i].score);
         }
-        return {found: true, res: result, len: result.length}
+        return {found: true, res: result, len: result.len}
       }
       else{
         return {found: false, res: undefined}
