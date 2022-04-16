@@ -13,10 +13,29 @@ const pool = new Pool(connection);
 
 
 let store = {
+  findCustomer(email){
+    return pool.query('select name, email, password from imagequiz.customer where email = $1', [email])
+    .then(x => {
+      if (x.rows.length == 1){
+        return {found: true};
+      }
+      else{
+        return {found: false};
+      }
+    })
+  },
+
   addCustomer: (name, email, password) => {
     const hashpass = bcrypt.hashSync(password, 10);
-    return pool.query('insert into imagequiz.customer (name, email, password) values ($1, $2, $3)', [name, email, hashpass]);
+    return pool.query('insert into imagequiz.customer (name, email, password) values ($1, $2, $3)', [name, email, hashpass])
+    .then(x => {
+      return {valid: true};
+    })
+    .catch(e => {
+      return {valid: false};
+    })
   },
+
 
   login: (email, password) => {
     return pool.query('select name, email, password from imagequiz.customer where email = $1', [email])
@@ -26,7 +45,7 @@ let store = {
         if (valid){
           return {valid: true};
         }else{
-          return  {valid: false, message: 'Credentials are not valid.'}
+          return {valid: false, message: 'Credentials are not valid.'}
         }
       }else{
         return {valid: false, message: 'Email not found.'}
