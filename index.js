@@ -2,10 +2,8 @@ const express = require("express");
 const cors = require("cors");
 const { store } = require("./data_access/store");
 
-
 const application = express();
 const port = process.env.PORT || 4002;
-
 
 //middlewares
 application.use(express.json());
@@ -93,6 +91,7 @@ application.get("/quiz/:name", (request, response) => {
 application.get("/flowers", (request, response) => {
   store.getFlower()
   .then(x => {
+    console.log(x);
     if (x.found){
       response.status(200).json({ done: true, result: x.res, message: x.len + " flowers found." });
     }else{
@@ -124,6 +123,7 @@ application.get("/scores/:quiztaker/:quizname", (request, response) => {
 
   store.getScores(quizTaker, quizName)
   .then(x => {
+    console.log(x);
     if (x.found){
       response.status(200).json({ done: true, result: x.res, message: x.len + " scores found." });
     }else{
