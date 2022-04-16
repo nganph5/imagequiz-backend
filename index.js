@@ -2,12 +2,15 @@ const express = require("express");
 const cors = require("cors");
 const { store } = require("./data_access/store");
 
+
 const application = express();
 const port = process.env.PORT || 4002;
+
 
 //middlewares
 application.use(express.json());
 application.use(cors());
+
 
 //methods
 application.get("/", (request, response) => {
@@ -15,6 +18,7 @@ application.get("/", (request, response) => {
     .status(200)
     .json({ done: true, message: "Welcome to image quiz backend API!" });
 });
+
 
 application.post("/register", (request, response) => {
   let name = request.body.name;
@@ -85,14 +89,21 @@ application.get("/quiz/:name", (request, response) => {
   });
 });
 
+
 application.get("/flowers", (request, response) => {
-  let result = store.getFlower();
-  if (result.done) {
-    response.status(200).json({ done: true, result: result.flowerlist });
-  } else {
-    response.status(404).json({ done: false, message: result.message });
-  }
+  store.getFlower()
+  .then(x => {
+    if (x.found){
+      response.status(200).json({ done: true, result: x.res, message: x.len + " flowers found." });
+    }else{
+      response.status(404).json({ done: false, result: x.res, message: "0 flower found." });
+    }
+  })
+  .catch(e => {
+    response.status(500).json({ done: false, result: undefined, message: "Cannot retrieve the flower list due to an error." });
+  })
 });
+
 
 application.post("/score", (request, response) => {
   let quizTaker = request.body.quizTaker;
@@ -105,16 +116,23 @@ application.post("/score", (request, response) => {
     response.status(200).json({ done: true, message: store.message });
   }
 });
+
+
 application.get("/scores/:quiztaker/:quizname", (request, response) => {
   let quizTaker = request.params.quiztaker;
   let quizName = request.params.quizname;
-  let score = store.getScores(quizTaker, quizName);
-  console.log(score);
-  if (score.done) {
-    response.status(200).json({ done: true, result: score.result });
-  } else {
-    response.status(404).json({ done: false, message: score.message });
-  }
+
+  store.getScores(quizTaker, quizName)
+  .then(x => {
+    if (x.found){
+      response.status(200).json({ done: true, result: x.res, message: x.len + " scores found." });
+    }else{
+      response.status(404).json({ done: false, result: x.res, message: "0 score found." });
+    }
+  })
+  .catch(e => {
+    response.status(500).json({ done: false, result: undefined, message: "Cannot retrieve " + quizTaker + " result in quiz " + quizName + " due to an error." });
+  })
 });
 
 application.listen(port, () => {

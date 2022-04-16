@@ -25,6 +25,7 @@ let store = {
     })
   },
 
+
   addCustomer: (name, email, password) => {
     const hashpass = bcrypt.hashSync(password, 10);
     return pool.query('insert into imagequiz.customer (name, email, password) values ($1, $2, $3)', [name, email, hashpass])
@@ -53,6 +54,7 @@ let store = {
     })
   },
 
+
   getQuiz: (name) => {
     let sqlQuery = `select q.id as quiz_id, q2.* from imagequiz.quiz q join imagequiz.quiz_question qq on q.id = qq.quiz_id
     join imagequiz.question q2 on qq.question_id = q2.id
@@ -71,10 +73,26 @@ let store = {
     });    
   },
 
+
   getFlower: () => {
-    let flowerlist = flowers;
-    return { done: true, flowerlist };
+    return pool.query('select * from imagequiz.flowers')
+    .then(x => {
+      if (x.rows.length > 0){
+        let result = []
+        for(let i in x.rows){
+          result.push(x.rows[i].name);
+        }
+        return { found: true, res: result, len: result.length }
+      }
+      else{
+        return { found: false, res: undefined }
+      }
+    })
+    .catch(e => {
+      return {found: false}
+    })
   },
+
 
   score: (quizTaker, quizName, score, date) => {
     scores.push({
@@ -86,20 +104,28 @@ let store = {
     return { done: true, message: "Score is saved" };
   },
 
+
   getScores: (quizTaker,quizName) => {
-    res = [];
-    for(let i = 0; i < scores.length; i++){
-      let s = scores[i];
-      if (s.quizTaker === quizTaker && s.quizId === quizName){
-        res.push(s.score);
+    let sqlQuery = `select s.score from imagequiz.score s 
+    join imagequiz.customer c on s.customer_id = c.id 
+    where c.email = $1 and s.quiz_id = $2;`
+    return pool.query(sqlQuery, [quizTaker.toLowerCase(), quizName.toLowerCase()])
+    .then(x => {
+      if (x.rows.length > 0){
+        let result = []
+        for(let i in x.rows){
+          result.push(x.rows[i].score);
+        }
+        return { found: true, res: result, len: result.length }
       }
-    }
-    if (res.length > 0) {
-      return { done: true, result: res, message: "here is the score" };
-    } else {
-      return { done: false, message: "Undefined" };
-    }
-  },
+      else{
+        return { found: false, res: undefined }
+      }
+    })
+    .catch(e => {
+      return { found: false, res: undefined }
+    })   
+  }
 };
 
 module.exports = { store };
