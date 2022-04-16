@@ -82,10 +82,10 @@ let store = {
         for(let i in x.rows){
           result.push(x.rows[i].name);
         }
-        return { found: true, res: result, len: result.length }
+        return {found: true, res: result, len: result.length}
       }
       else{
-        return { found: false, res: undefined }
+        return {found: false, res: undefined}
       }
     })
     .catch(e => {
@@ -101,7 +101,7 @@ let store = {
       score: score,
       date: date
     });
-    return { done: true, message: "Score is saved" };
+    return {done: true, message: "Score is saved"};
   },
 
 
@@ -116,14 +116,14 @@ let store = {
         for(let i in x.rows){
           result.push(x.rows[i].score);
         }
-        return { found: true, res: result, len: result.length }
+        return {found: true, res: result, len: result.length}
       }
       else{
-        return { found: false, res: undefined }
+        return {found: false, res: undefined}
       }
     })
     .catch(e => {
-      return { found: false, res: undefined }
+      return {found: false, res: undefined}
     })   
   }
 };

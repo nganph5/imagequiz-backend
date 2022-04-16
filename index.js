@@ -93,13 +93,32 @@ application.get("/flowers", (request, response) => {
   .then(x => {
     console.log(x);
     if (x.found){
-      response.status(200).json({ done: true, result: x.res, message: x.len + " flowers found." });
+      response.status(200).json({done: true, result: x.res, message: x.len + " flowers found."});
     }else{
-      response.status(404).json({ done: false, result: x.res, message: "0 flower found." });
+      response.status(404).json({done: false, result: x.res, message: "0 flower found."});
     }
   })
   .catch(e => {
-    response.status(500).json({ done: false, result: undefined, message: "Cannot retrieve the flower list due to an error." });
+    response.status(404).json({done: false, result: undefined, message: "Cannot retrieve the flower list due to an error."});
+  })
+});
+
+
+application.get("/scores/:quiztaker/:quizname", (request, response) => {
+  let quizTaker = request.params.quiztaker;
+  let quizName = request.params.quizname;
+
+  store.getScores(quizTaker, quizName)
+  .then(x => {
+    console.log(x);
+    if (x.found){
+      response.status(200).json({done: true, result: x.res, message: x.len + " scores found."});
+    }else{
+      response.status(404).json({done: false, result: x.res, message: "0 score found."});
+    }
+  })
+  .catch(e => {
+    response.status(404).json({done: false, result: undefined, message: "Cannot retrieve " + quizTaker + " result in quiz " + quizName + " due to an error."});
   })
 });
 
@@ -114,25 +133,6 @@ application.post("/score", (request, response) => {
   if (stored.done) {
     response.status(200).json({ done: true, message: store.message });
   }
-});
-
-
-application.get("/scores/:quiztaker/:quizname", (request, response) => {
-  let quizTaker = request.params.quiztaker;
-  let quizName = request.params.quizname;
-
-  store.getScores(quizTaker, quizName)
-  .then(x => {
-    console.log(x);
-    if (x.found){
-      response.status(200).json({ done: true, result: x.res, message: x.len + " scores found." });
-    }else{
-      response.status(404).json({ done: false, result: x.res, message: "0 score found." });
-    }
-  })
-  .catch(e => {
-    response.status(500).json({ done: false, result: undefined, message: "Cannot retrieve " + quizTaker + " result in quiz " + quizName + " due to an error." });
-  })
 });
 
 application.listen(port, () => {
