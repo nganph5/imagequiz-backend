@@ -128,11 +128,47 @@ application.post("/score", (request, response) => {
   let quizName = request.body.quizName;
   let score = request.body.score;
   let date = new Date().toISOString().slice(0, 10);
-  let stored = store.score(quizTaker, quizName, score, date);
-  console.log(stored);
-  if (stored.done) {
-    response.status(200).json({ done: true, message: store.message });
-  }
+
+  store.findCustomer(quizTaker)
+  .then((resp) => {
+    console.log(resp.found == false);
+    if (resp.found == false){
+      response
+      .status(400)
+      .json({ done: true, message: "The quizTaker " + quizTaker + " is not found." });
+    }else{
+      const taker_id = resp.id;
+      store.findQuiz(quizName)
+      .then((resp) => {
+        if (resp.found){
+          const quiz_id = resp.id;
+          store.score(taker_id, quiz_id, score, date)
+          .then((resp) => {
+            if (resp.valid){
+              response
+              .status(200)
+              .json({ done: true, message: "The score " + score + " of user " + quizTaker + " for quiz " + quizName + " on " + date + " was added successfully!" });
+            }else{
+              response
+              .status(500)
+              response.status(500).json({ done: false, message: "Could not add the requested score." });
+            }
+          })
+          .catch(e => {
+            response.status(500).json({ done: false, message: "Could not add the requested score." });
+          });
+
+        }else{
+          response
+          .status(400)
+          .json({ done: true, message:"The quiz " + quizName + " is not found." });
+        }
+      })
+    }
+  })
+  .catch(e => {
+    response.status(500).json({ done: false, message: "Could not add the requested score." });
+  });
 });
 
 application.listen(port, () => {

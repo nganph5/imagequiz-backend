@@ -14,10 +14,23 @@ const pool = new Pool(connection);
 
 let store = {
   findCustomer(email){
-    return pool.query('select name, email, password from imagequiz.customer where email = $1', [email])
+    return pool.query('select * from imagequiz.customer where email = $1', [email])
     .then(x => {
       if (x.rows.length == 1){
-        return {found: true};
+        return {found: true, id: x.rows[0].id};
+      }
+      else{
+        return {found: false};
+      }
+    })
+  },
+
+
+  findQuiz(quizName){
+    return pool.query('select * from imagequiz.quiz where name = $1', [quizName])
+    .then(x => {
+      if (x.rows.length == 1){
+        return {found: true, id: x.rows[0].id};
       }
       else{
         return {found: false};
@@ -94,14 +107,14 @@ let store = {
   },
 
 
-  score: (quizTaker, quizName, score, date) => {
-    scores.push({
-      quizTaker: quizTaker,
-      quizId: quizName,
-      score: score,
-      date: date
-    });
-    return {done: true, message: "Score is saved"};
+  score: (quizTaker, quiz, score, date) => {
+    return pool.query(`insert into imagequiz.score (customer_id, quiz_id, date, score) values ($1, $2, $3, $4)`, [quizTaker, quiz, date, score])
+    .then(x => {
+      return {valid: true};
+    })
+    .catch(e => {
+      return {valid: false};
+    })
   },
 
 
