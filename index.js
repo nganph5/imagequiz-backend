@@ -28,7 +28,7 @@ application.post("/register", (request, response) => {
     if (resp.found){
       response
       .status(400)
-      .json({ done: true, message: "The customer " + email + " existed. Please log in." });
+      .json({ done: false, message: "The customer " + email + " existed. Please log in." });
     }else{
       store.addCustomer(name, email, password)
       .then((resp) => {
@@ -135,7 +135,7 @@ application.post("/score", (request, response) => {
     if (resp.found == false){
       response
       .status(400)
-      .json({ done: true, message: "The quizTaker " + quizTaker + " is not found." });
+      .json({ done: false, message: "The quizTaker " + quizTaker + " is not found." });
     }else{
       const taker_id = resp.id;
       store.findQuiz(quizName)
@@ -161,7 +161,7 @@ application.post("/score", (request, response) => {
         }else{
           response
           .status(400)
-          .json({ done: true, message:"The quiz " + quizName + " is not found." });
+          .json({ done: false, message:"The quiz " + quizName + " is not found." });
         }
       })
     }
