@@ -93,7 +93,7 @@ let store = {
       if (x.rows.length > 0){
         let result = []
         for(let i in x.rows){
-          result.push(x.rows[i].name);
+          result.push({"name": x.rows[i].name, "picture": x.rows[i].picture});
         }
         return {found: true, res: result, len: result.length}
       }
