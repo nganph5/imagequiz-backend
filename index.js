@@ -1,13 +1,54 @@
 const express = require("express");
-const cors = require("cors");
+var cors = require("cors");
+var passport = require("passport");
+var LocalStrategy = require("passport-local");
+var session = require("express-session");
+var SQLiteStore = require('connect-sqlite3')(session);
 const { store } = require("./data_access/store");
+
 
 const application = express();
 const port = process.env.PORT || 4002;
 
+
 //middlewares
 application.use(express.json());
 application.use(cors());
+
+passport.use(new LocalStrategy({ usernameField: 'email'}, function verify(username, password, cb) {
+  store.login(username, password)
+  .then(x => {
+    if (x.valid){
+      return cb(null, x.user)
+    }else{
+      return cb(null, false, {message: 'Incorrect username or password.'})
+    }
+  })
+  .catch(e => {
+    console.log(e);
+    cb('Something went wrong!');
+  })
+}));
+
+application.use(session({
+  secret: 'keyboard cat',
+  resave: false,
+  saveUninitialized: false,
+  store: new SQLiteStore({ db: 'sessions.db', dir: './sessions' })
+}));
+application.use(passport.authenticate('session'));
+
+passport.serializeUser(function(user, cb) {
+  process.nextTick(function() {
+    cb(null, { id: user.id, username: user.username });
+  });
+});
+
+passport.deserializeUser(function(user, cb) {
+  process.nextTick(function() {
+    return cb(null, user);
+  });
+});
 
 
 //methods
@@ -16,7 +57,6 @@ application.get("/", (request, response) => {
     .status(200)
     .json({ done: true, message: "Welcome to image quiz backend API!" });
 });
-
 
 application.post("/register", (request, response) => {
   let name = request.body.name;
@@ -49,29 +89,29 @@ application.post("/register", (request, response) => {
   });
 });
 
-application.post("/login", (request, response) => {
-  let email = request.body.email;
-  let password = request.body.password;
+application.post('/login', passport.authenticate('local',{
+  successRedirect: '/login/succeeded',
+  failureRedirect: '/login/failed'
+}));
 
-  store.login(email, password)
-  .then((resp) => {
-    console.log(resp);
-    if (resp.valid){
-      response
-      .status(200)
-      .json({ done: true, message: "The customer " + email + " logged in successfully!" });
-    }else{
-      response
-      .status(401)
-      .json({ done: false, message: resp.message });
-    }
-  })
-  .catch(e => {
-    response.status(500).json({ done: false, message: "Could not log user " + email + " in due to an error." });
-  });
+
+application.get("/login/succeeded", (request, response) => {
+  response
+    .status(200)
+    .json({ done: true, message: "The customer logged in successfully!" });
+});
+
+
+application.get("/login/failed", (request, response) => {
+  response
+    .status(401)
+    .json({ done: false, message: "Invalid credentials!" });
 });
 
 application.get("/quiz/:name", (request, response) => {
+  if (!request.isAuthenticated()){
+    response.status(401).json({done: false, message: 'Please sign in first.'});
+  }
   let name = request.params.name;
   store.getQuiz(name)
   .then(x => {

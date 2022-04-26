@@ -57,7 +57,7 @@ let store = {
       if (x.rows.length == 1){
         let valid = bcrypt.compareSync(password, x.rows[0].password);
         if (valid){
-          return {valid: true};
+          return {valid: true, user: {id: x.rows[0].id, username: x.rows[0].email}};
         }else{
           return {valid: false, message: 'Credentials are not valid.'}
         }
