@@ -14,12 +14,11 @@ application.set("port", port);
 
 //middlewares
 application.use(express.json());
-// app.options('*', cors());
 application.use(cors(
-  //{
+  {
   //origin: 'http://localhost:3000',
-  // origin: 'https://nganph5.github.io/',
-  // credentials: true}
+  origin: 'https://nganph5.github.io',
+  credentials: true}
   ));
 
 passport.use(new LocalStrategy({ usernameField: 'email'}, function verify(username, password, cb) {
@@ -175,6 +174,7 @@ application.get("/scores/:quiztaker/:quizname", (request, response) => {
   .then(x => {
     console.log(x);
     if (x.found){
+      response.setHeader();
       response.status(200).json({done: true, result: x.res, message: x.len + " scores found."});
     }else{
       response.status(404).json({done: false, result: x.res, message: "0 score found."});
