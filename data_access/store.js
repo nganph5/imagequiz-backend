@@ -112,6 +112,7 @@ let store = {
     .then(x => {
       if (x.rows.length > 0){
         let result = []
+        console.log(x);
         for(let i in x.rows){
           result.push({"name": x.rows[i].name});
         }

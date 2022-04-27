@@ -149,13 +149,13 @@ application.get("/quizzes", (request, response) => {
   .then(x => {
     console.log(x);
     if (x.found){
-      response.status(200).json({done: true, result: x.res, message: x.len + " quizzes found."});
+      response.status(200).json(x.res);
     }else{
-      response.status(404).json({done: false, result: x.res, message: "0 quizz found."});
+      response.status(404).json(x.res);
     }
   })
   .catch(e => {
-    response.status(404).json({done: false, result: [], message: "Cannot retrieve the quizz list due to an error."});
+    response.status(404).json([]);
   })
 });
 
