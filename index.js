@@ -9,6 +9,7 @@ const { store } = require("./data_access/store");
 
 const application = express();
 const port = process.env.PORT || 4002;
+application.set("port", port);
 
 
 //middlewares
