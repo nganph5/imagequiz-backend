@@ -107,6 +107,26 @@ let store = {
   },
 
 
+  getQuizzes: () => {
+    return pool.query('select * from imagequiz.quiz')
+    .then(x => {
+      if (x.rows.length > 0){
+        let result = []
+        for(let i in x.rows){
+          result.push({"name": x.rows[i].name});
+        }
+        return {found: true, res: result, len: result.length}
+      }
+      else{
+        return {found: false, res: []}
+      }
+    })
+    .catch(e => {
+      return {found: false}
+    })
+  },
+
+
   score: (quizTaker, quiz, score, date) => {
     return pool.query(`insert into imagequiz.score (customer_id, quiz_id, date, score) values ($1, $2, $3, $4)`, [quizTaker, quiz, date, score])
     .then(x => {

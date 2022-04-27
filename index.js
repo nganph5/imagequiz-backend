@@ -144,6 +144,22 @@ application.get("/flowers", (request, response) => {
 });
 
 
+application.get("/quizzes", (request, response) => {
+  store.getQuizzes()
+  .then(x => {
+    console.log(x);
+    if (x.found){
+      response.status(200).json({done: true, result: x.res, message: x.len + " quizzes found."});
+    }else{
+      response.status(404).json({done: false, result: x.res, message: "0 quizz found."});
+    }
+  })
+  .catch(e => {
+    response.status(404).json({done: false, result: [], message: "Cannot retrieve the quizz list due to an error."});
+  })
+});
+
+
 application.get("/scores/:quiztaker/:quizname", (request, response) => {
   let quizTaker = request.params.quiztaker;
   let quizName = request.params.quizname;
