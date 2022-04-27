@@ -13,7 +13,11 @@ const port = process.env.PORT || 4002;
 
 //middlewares
 application.use(express.json());
-application.use(cors());
+application.use(cors({
+  //origin: 'http://localhost:3000',
+  origin: 'https://nganph5.github.io/imagequiz',
+  credentials: true
+}));
 
 passport.use(new LocalStrategy({ usernameField: 'email'}, function verify(username, password, cb) {
   store.login(username, password)
