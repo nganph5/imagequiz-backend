@@ -13,7 +13,7 @@ const port = process.env.PORT || 4002;
 
 //middlewares
 application.use(express.json());
-app.options('*', cors());
+// app.options('*', cors());
 application.use(cors(
   //{
   //origin: 'http://localhost:3000',
