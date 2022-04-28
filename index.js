@@ -16,8 +16,8 @@ application.set("port", port);
 application.use(express.json());
 application.use(cors(
   {
-  origin: 'http://localhost:3000',
-  //origin: 'https://nganph5.github.io',
+  //origin: 'http://localhost:3000',
+  origin: 'https://nganph5.github.io',
   credentials: true}
   ));
 
