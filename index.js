@@ -59,10 +59,17 @@ passport.deserializeUser(function(user, cb) {
 
 //methods
 application.get("/", (request, response) => {
-  response
+  if (request.sessionID){
+    response
+      .status(200)
+      .json({ done: true, message: "Welcome to " + request.body.email + " image quiz backend API!" });
+  }else{
+    response
     .status(200)
     .json({ done: true, message: "Welcome to image quiz backend API!" });
+  }
 });
+
 
 application.post("/register", (request, response) => {
   let name = request.body.name;
@@ -115,7 +122,7 @@ application.get("/login/failed", (request, response) => {
 });
 
 application.get("/quiz/:name", (request, response) => {
-  if (!request.isAuthenticated()){
+  if (!request.sessionID){
     response.status(401).json({done: false, message: 'Please sign in first.'});
   }
   let name = request.params.name;
