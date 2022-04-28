@@ -16,8 +16,8 @@ application.set("port", port);
 application.use(express.json());
 application.use(cors(
   {
-  //origin: 'http://localhost:3000',
-  origin: 'https://nganph5.github.io',
+  origin: 'http://localhost:3000',
+  //origin: 'https://nganph5.github.io',
   credentials: true}
   ));
 
@@ -120,6 +120,13 @@ application.get("/login/failed", (request, response) => {
     .status(401)
     .json({ done: false, message: "Invalid credentials!" });
 });
+
+
+application.post('/logout', (request, response) => {
+  request.logout();
+  response.redirect('/');
+});
+
 
 application.get("/quiz/:name", (request, response) => {
   if (!request.sessionID){
