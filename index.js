@@ -80,7 +80,7 @@ application.post("/register", (request, response) => {
   .then((resp) => {
     if (resp.found){
       response
-      .status(400)
+      .status(403)
       .json({ done: false, message: "The customer " + email + " existed. Please log in." });
     }else{
       store.addCustomer(name, email, password)
@@ -153,9 +153,9 @@ application.get("/flowers", (request, response) => {
   .then(x => {
     console.log(x);
     if (x.found){
-      response.status(200).json(x.res);
+      response.status(200).json({done: true, result: x.res});
     }else{
-      response.status(404).json(x.res);
+      response.status(404).json({done: false, result: x.res});
     }
   })
   .catch(e => {
@@ -169,9 +169,9 @@ application.get("/quizzes", (request, response) => {
   .then(x => {
     console.log(x);
     if (x.found){
-      response.status(200).json(x.res);
+      response.status(200).json({done: true, result: x.res});
     }else{
-      response.status(404).json(x.res);
+      response.status(404).json({done: true, result: x.res});
     }
   })
   .catch(e => {
@@ -212,7 +212,7 @@ application.post("/score", (request, response) => {
     if (resp.found == false){
       response
       .status(400)
-      .json({ done: false, message: "The quizTaker " + quizTaker + " is not found." });
+      .json({ done: false, message: "The quizTaker " + quizTaker + " is not found.", result: []});
     }else{
       const taker_id = resp.id;
       store.findQuiz(quizName)
@@ -224,15 +224,16 @@ application.post("/score", (request, response) => {
             if (resp.valid){
               response
               .status(200)
-              .json({ done: true, message: "The score " + score + " of user " + quizTaker + " for quiz " + quizName + " on " + date + " was added successfully!" });
+              .json({ done: true, message: "The score " + score + " of user " + quizTaker + " for quiz " + quizName + " on " + date + " was added successfully!"
+             , result: resp.res});
             }else{
               response
               .status(500)
-              response.status(500).json({ done: false, message: "Could not add the requested score." });
+              response.status(500).json({ done: false, message: "Could not add the requested score.", result: resp.res});
             }
           })
           .catch(e => {
-            response.status(500).json({ done: false, message: "Could not add the requested score." });
+            response.status(500).json({ done: false, message: "Could not add the requested score.", result: []});
           });
 
         }else{
