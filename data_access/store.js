@@ -130,11 +130,12 @@ let store = {
 
   score: (quizTaker, quiz, score, date) => {
     return pool.query(`insert into imagequiz.score (customer_id, quiz_id, date, score) values ($1, $2, $3, $4)`, [quizTaker, quiz, date, score])
+    .then(getScores(quizTaker, quiz))
     .then(x => {
-      return {valid: true};
+      return {valid: true, res: x.res};
     })
     .catch(e => {
-      return {valid: false};
+      return {valid: false, res: []};
     })
   },
 
@@ -153,11 +154,11 @@ let store = {
         return {found: true, res: result, len: result.len}
       }
       else{
-        return {found: false, res: []}
+        return {found: false, res: [], len: 0}
       }
     })
     .catch(e => {
-      return {found: false, res: []}
+      return {found: false, res: [], len: 0}
     })   
   }
 };

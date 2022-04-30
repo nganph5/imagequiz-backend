@@ -229,7 +229,7 @@ application.post("/score", (request, response) => {
             }else{
               response
               .status(500)
-              response.status(500).json({ done: false, message: "Could not add the requested score.", result: resp.res});
+              response.status(500).json({ done: false, message: "Could not add the requested score.", result: []});
             }
           })
           .catch(e => {
@@ -239,13 +239,13 @@ application.post("/score", (request, response) => {
         }else{
           response
           .status(400)
-          .json({ done: false, message:"The quiz " + quizName + " is not found." });
+          .json({ done: false, message:"The quiz " + quizName + " is not found.", result: []});
         }
       })
     }
   })
   .catch(e => {
-    response.status(500).json({ done: false, message: "Could not add the requested score." });
+    response.status(500).json({ done: false, message: "Could not add the requested score." , result: []});
   });
 });
 
