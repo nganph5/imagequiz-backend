@@ -9,7 +9,7 @@ const { store } = require('./data_access/store');
 //let backendURL = "http://localhost:4002";
 //let frontEndUrl = "http://localhost:3000";
 let backendURL = "https://nganph5-imagequiz-api.herokuapp.com";
-let frontEndUrl = "https://nganph5.github.io";
+let frontEndUrl = "https://nganph5.github.io/imagequiz";
 
 
 const application = express();
