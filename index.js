@@ -155,7 +155,7 @@ application.get('/isloggedin', (request, response) => {
   if(request.isAuthenticated()) {
     response.status(200).json({ done: true, result: true });
   } else {
-    response.status(410).json({ done: false, result: false });
+    response.status(403).json({ done: false, result: false });
   }  
 });
 
