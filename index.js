@@ -135,7 +135,6 @@ application.get('/auth/google/callback',
   }));
 
   application.get('/auth/google/success', (request, response) => {
-    console.log(request)
     response.redirect(`${frontEndUrl}/imagequiz/#/google/${request.user.username}/${request.user.name}`);
   
   });
@@ -150,7 +149,7 @@ application.post('/logout', (request, response) => {
 });
 
 
-application.get('/isloggedin', (request, response) => {
+application.get('/loggedin', (request, response) => {
   if(request.isAuthenticated()) {
     response.status(200).json({ done: true, result: request.isAuthenticated() });
   } else {
