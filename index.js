@@ -151,11 +151,10 @@ application.post('/logout', (request, response) => {
 
 
 application.get('/isloggedin', (request, response) => {
-  console.log(request)
   if(request.isAuthenticated()) {
-    response.status(200).json({ done: true, result: true });
+    response.status(200).json({ done: true, result: request.isAuthenticated() });
   } else {
-    response.status(403).json({ done: false, result: false });
+    response.status(403).json({ done: false, result: request.isAuthenticated() });
   }  
 });
 
