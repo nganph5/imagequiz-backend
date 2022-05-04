@@ -136,11 +136,11 @@ application.get('/auth/google/callback',
 
   application.get('/auth/google/success', (request, response) => {
     console.log(request)
-    response.redirect(`${frontEndUrl}/imagquiz/#/google/${request.user.username}/${request.user.name}`);
+    response.redirect(`${frontEndUrl}/imagequiz/#/google/${request.user.username}/${request.user.name}`);
   
   });
   application.get('/auth/google/failure', (request, response) => {
-    response.redirect(`${frontEndUrl}/imagquiz/#`);
+    response.redirect(`${frontEndUrl}/imagequiz/#`);
   });
 
 
