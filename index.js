@@ -1,10 +1,15 @@
-const express = require("express");
-var cors = require("cors");
-var passport = require("passport");
-var LocalStrategy = require("passport-local");
-var session = require("express-session");
+const express = require('express');
+var cors = require('cors');
+var passport = require('passport');
+var LocalStrategy = require('passport-local');
+const GoogleStrategy = require("passport-google-oauth2").Strategy;
+var session = require('express-session');
 var SQLiteStore = require('connect-sqlite3')(session);
-const { store } = require("./data_access/store");
+const { store } = require('./data_access/store');
+//let backendURL = "http://localhost:4002";
+//let frontEndUrl = "http://localhost:3000";
+let backendURL = "https://nganph5-imagequiz-api.herokuapp.com";
+let frontEndUrl = "https://nganph5.github.io";
 
 
 const application = express();
@@ -16,12 +21,19 @@ application.set("port", port);
 application.use(express.json());
 application.use(cors(
   {
-  //origin: 'http://localhost:3000',
-  origin: 'https://nganph5.github.io',
+  origin: frontEndUrl,
   credentials: true}
-  ));
+));
 
-passport.use(new LocalStrategy({ usernameField: 'email'}, function verify(username, password, cb) {
+
+application.use((request, response, next) => {
+  next();
+})
+
+
+passport.use(new LocalStrategy(
+  { usernameField: 'email'}, 
+  function verify(username, password, cb) {
   store.login(username, password)
   .then(x => {
     if (x.valid){
@@ -31,10 +43,27 @@ passport.use(new LocalStrategy({ usernameField: 'email'}, function verify(userna
     }
   })
   .catch(e => {
-    console.log(e);
     cb('Something went wrong!');
   })
 }));
+
+
+passport.use(new GoogleStrategy(
+  {
+    clientID: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    callbackURL: `${backendURL}/auth/google/callback`,
+    passReqToCallback: true
+  },
+function (request, accessToken, refreshToken, profile, done) {
+  store.findOrCreateNonLocalCustomer(profile.displayName, profile.email, profile.id, profile.provider)
+    .then(x => done(null, x))
+    .catch(e => {
+      console.log(e);
+      return done('Something went wrong.');
+  });
+}));
+
 
 application.use(session({
   secret: 'keyboard cat',
@@ -44,62 +73,36 @@ application.use(session({
 }));
 application.use(passport.authenticate('session'));
 
-passport.serializeUser(function(user, cb) {
-  process.nextTick(function() {
+passport.serializeUser(function (user, cb) {
+  process.nextTick(function () {
     cb(null, { id: user.id, username: user.username });
   });
 });
 
-passport.deserializeUser(function(user, cb) {
-  process.nextTick(function() {
+passport.deserializeUser(function (user, cb) {
+  process.nextTick(function () {
     return cb(null, user);
   });
 });
 
 
 //methods
-application.get("/", (request, response) => {
-  if (request.sessionID){
-    response
-      .status(200)
-      .json({ done: true, message: "Welcome to " + request.body.email + " image quiz backend API!" });
-  }else{
-    response
-    .status(200)
-    .json({ done: true, message: "Welcome to image quiz backend API!" });
-  }
+application.get('/', (request, response) => {
+  response.status(200).json({ done: true, message: 'Welcome to hello world backend API!' });
 });
 
 
-application.post("/register", (request, response) => {
+application.post('/register', (request, response) => {
   let name = request.body.name;
   let email = request.body.email;
   let password = request.body.password;
-  
-  store.findCustomer(email)
-  .then((resp) => {
-    if (resp.found){
-      response
-      .status(403)
-      .json({ done: false, message: "The customer " + email + " existed. Please log in." });
-    }else{
-      store.addCustomer(name, email, password)
-      .then((resp) => {
-        if (resp.valid){
-          response
-          .status(200)
-          .json({ done: true, message: "The customer " + email + " registered successfully!" });
-        }else{
-          response
-          .status(500)
-          .json({ done: false, message:  "Could not register user " + email + " due to an error." });
-        }
-      })
-    }
-  })
-  .catch(e => {
-    response.status(500).json({ done: false, message: "Could not register user " + email + " due to an error." });
-  });
+
+  store.addCustomer(name, email, password)
+    .then(x => response.status(200).json({ done: true, message: 'The customer was added successfully!' }))
+    .catch(e => {
+      console.log(e);
+      response.status(500).json({ done: false, message: 'The customer was not added due to an error.' });
+    });
 });
 
 application.post('/login', passport.authenticate('local',{
@@ -109,22 +112,51 @@ application.post('/login', passport.authenticate('local',{
 
 
 application.get("/login/succeeded", (request, response) => {
-  response
-    .status(200)
-    .json({ done: true, message: "The customer logged in successfully!" });
+  response.status(200).json({ done: true, message: "The customer logged in successfully!" });
 });
 
 
 application.get("/login/failed", (request, response) => {
-  response
-    .status(401)
-    .json({ done: false, message: "Invalid credentials!" });
+  response.status(401).json({ done: false, message: "Invalid credentials!" });
 });
+
+
+application.get('/auth/google',
+  passport.authenticate('google', {
+    scope:
+      ['email', 'profile']
+  }
+  ));
+
+application.get('/auth/google/callback',
+  passport.authenticate('google', {
+    successRedirect: '/auth/google/success',
+    failureRedirect: '/auth/google/failure'
+  }));
+
+  application.get('/auth/google/success', (request, response) => {
+    console.log(request)
+    response.redirect(`${frontEndUrl}/#/google/${request.user.username}/${request.user.name}`);
+  
+  });
+  application.get('/auth/google/failure', (request, response) => {
+    response.redirect(`${frontEndUrl}/`);
+  });
 
 
 application.post('/logout', (request, response) => {
   request.logout();
   response.redirect('/');
+});
+
+
+application.get('/isloggedin', (request, response) => {
+  console.log(request)
+  if(request.isAuthenticated()) {
+    response.status(200).json({ done: true, result: true });
+  } else {
+    response.status(410).json({ done: false, result: false });
+  }  
 });
 
 
@@ -142,16 +174,14 @@ application.get("/quiz/:name", (request, response) => {
     }
   })
   .catch(e => {
-    console.log(e);
     response.status(500).json({ done: false, message: 'Something went wrong.' });
   });
 });
 
 
 application.get("/flowers", (request, response) => {
-  store.getFlower()
+  store.getFlowers()
   .then(x => {
-    console.log(x);
     if (x.found){
       response.status(200).json({done: true, result: x.res});
     }else{
@@ -167,7 +197,6 @@ application.get("/flowers", (request, response) => {
 application.get("/quizzes", (request, response) => {
   store.getQuizzes()
   .then(x => {
-    console.log(x);
     if (x.found){
       response.status(200).json({done: true, result: x.res});
     }else{
@@ -186,7 +215,6 @@ application.get("/scores/:quiztaker/:quizname", (request, response) => {
 
   store.getScores(quizTaker, quizName)
   .then(x => {
-    console.log(x);
     if (x.found){
       response.setHeader();
       response.status(200).json({done: true, result: x.res, message: x.len + " scores found."});
@@ -208,7 +236,6 @@ application.post("/score", (request, response) => {
 
   store.findCustomer(quizTaker)
   .then((resp) => {
-    console.log(resp.found == false);
     if (resp.found == false){
       response
       .status(400)
