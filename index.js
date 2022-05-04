@@ -151,9 +151,9 @@ application.post('/logout', (request, response) => {
 
 application.get('/loggedin', (request, response) => {
   if(request.isAuthenticated()) {
-    response.status(200).json({ done: true, result: request.isAuthenticated() });
+    response.status(200).json({ done: true, request: request });
   } else {
-    response.status(403).json({ done: false, result: request.isAuthenticated() });
+    response.status(401).json({ done: false, request: request });
   }  
 });
 
