@@ -9,7 +9,7 @@ const { store } = require('./data_access/store');
 //let backendURL = "http://localhost:4002";
 //let frontEndUrl = "http://localhost:3000";
 let backendURL = "https://nganph5-imagequiz-api.herokuapp.com";
-let frontEndUrl = "https://nganph5.github.io/imagequiz";
+let frontEndUrl = "https://nganph5.github.io";
 
 
 const application = express();
@@ -136,11 +136,11 @@ application.get('/auth/google/callback',
 
   application.get('/auth/google/success', (request, response) => {
     console.log(request)
-    response.redirect(`${frontEndUrl}/#/google/${request.user.username}/${request.user.name}`);
+    response.redirect(`${frontEndUrl}/imagquiz/#/google/${request.user.username}/${request.user.name}`);
   
   });
   application.get('/auth/google/failure', (request, response) => {
-    response.redirect(`${frontEndUrl}/`);
+    response.redirect(`${frontEndUrl}/imagquiz/#`);
   });
 
 
